@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+*.egg-info/
+dist/
+build/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+*/data/
+*/cache/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+**/logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Uploaded files (these are in volumes)
+uploads/
+storage/
+
+# Secrets
+*.key
+*.pem
+*.crt
+secrets/

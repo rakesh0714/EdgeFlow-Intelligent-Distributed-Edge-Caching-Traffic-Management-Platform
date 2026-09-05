@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN Statistics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .node-list {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .node-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .node-item:last-child {
+            border-bottom: none;
+        }
+
+        .online {
+            color: #48bb78;
+        }
+
+        .offline {
+            color: #f56565;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logs-table th, .logs-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logs-table th {
+            color: #4a5568;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+        }
+
+        .badge-hit {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-miss {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            background: #48bb78;
+            height: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">📊 CDN Stats</div>
+            <div class="nav-links">
+                <a href="/">Browse</a>
+                <a href="/upload">Upload</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 CDN Statistics</h1>
+            <p>Real-time performance metrics</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>⚡ Cache Hit Ratio</h3>
+                <div class="stat-value">{{ hit_ratio }}%</div>
+                <div class="stat-label">Overall Performance</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ hit_ratio }}%;"></div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>📈 Total Requests</h3>
+                <div class="stat-value">{{ total_requests }}</div>
+                <div class="stat-label">Files Served</div>
+                <div style="margin-top: 0.5rem;">
+                    <span>✅ Hits: {{ total_hits }}</span> | 
+                    <span>❌ Misses: {{ total_requests - total_hits }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>📤 Uploads</h3>
+                <div class="stat-value">{{ upload_history|length }}</div>
+                <div class="stat-label">Files Uploaded</div>
+            </div>
+        </div>
+
+        <div class="node-list">
+            <h3 style="margin-bottom: 1rem;">🌍 Edge Nodes</h3>
+            {% for node in edge_nodes %}
+            <div class="node-item">
+                <span><strong>{{ node.name }}</strong> Region</span>
+                <span class="{{ 'online' if node.online else 'offline' }}">
+                    {{ '🟢 Online' if node.online else '🔴 Offline' }}
+                </span>
+                <span>{{ node.active_connections }} connections</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if upload_history %}
+        <div class="node-list">
+            <h3 style="margin-bottom: 1rem;">📤 Recent Uploads</h3>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>File</th>
+                        <th>Size</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for upload in upload_history %}
+                    <tr>
+                        <td>{{ upload.timestamp }}</td>
+                        <td>{{ upload.filename }}</td>
+                        <td>{{ upload.size_str }}</td>
+                        <td>
+                            <span class="badge badge-hit">{{ upload.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if access_logs %}
+        <div class="node-list">
+            <h3 style="margin-bottom: 1rem;">📋 Recent Access Logs</h3>
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>File</th>
+                        <th>Region</th>
+                        <th>Cache</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in access_logs %}
+                    <tr>
+                        <td>{{ log.timestamp }}</td>
+                        <td>{{ log.filename }}</td>
+                        <td>{{ log.region.upper() }}</td>
+                        <td>
+                            <span class="badge {{ 'badge-hit' if log.cache_status == 'HIT' else 'badge-miss' }}">
+                                {{ log.cache_status }}
+                            </span>
+                        </td>
+                        <td>{{ log.response_time_ms }}ms</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>All data comes from Traffic Manager (GSLB) | No direct origin/edge access</p>
+        </div>
+    </div>
+</body>
+</html>

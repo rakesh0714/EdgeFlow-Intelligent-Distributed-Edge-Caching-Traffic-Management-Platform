@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # Origin Server - Stores original files
+  origin-server:
+    build: ./origin-server
+    container_name: origin-server
+    ports:
+      - "8084:8084"
+    volumes:
+      - origin-data:/app/data
+    networks:
+      - cdn-network
+    restart: unless-stopped
+
+  # Edge Node A - America Region
+  edge-node-a:
+    build: ./edge-node
+    container_name: edge-node-a
+    ports:
+      - "8081:8081"
+    volumes:
+      - edge-cache-a:/app/cache
+    environment:
+      - NODE_REGION=america
+    networks:
+      - cdn-network
+    depends_on:
+      - origin-server
+    restart: unless-stopped
+
+  # Edge Node B - Europe Region
+  edge-node-b:
+    build: ./edge-node
+    container_name: edge-node-b
+    ports:
+      - "8082:8081"
+    volumes:
+      - edge-cache-b:/app/cache
+    environment:
+      - NODE_REGION=europe
+    networks:
+      - cdn-network
+    depends_on:
+      - origin-server
+    restart: unless-stopped
+
+  # Edge Node C - Asia Region
+  edge-node-c:
+    build: ./edge-node
+    container_name: edge-node-c
+    ports:
+      - "8083:8081"
+    volumes:
+      - edge-cache-c:/app/cache
+    environment:
+      - NODE_REGION=asia
+    networks:
+      - cdn-network
+    depends_on:
+      - origin-server
+    restart: unless-stopped
+
+  # GSLB Traffic Manager - Routes users
+  traffic-manager:
+    build: ./traffic-manager
+    container_name: traffic-manager
+    ports:
+      - "8080:8080"
+    networks:
+      - cdn-network
+    depends_on:
+      - edge-node-a
+      - edge-node-b
+      - edge-node-c
+    restart: unless-stopped
+
+networks:
+  cdn-network:
+    driver: bridge
+
+volumes:
+  origin-data:
+  edge-cache-a:
+  edge-cache-b:
+  edge-cache-c:

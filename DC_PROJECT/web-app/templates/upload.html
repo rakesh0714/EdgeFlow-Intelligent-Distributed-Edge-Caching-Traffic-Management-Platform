@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload to CDN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message h3 {
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message p {
+            color: #94a3b8;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #f87171;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(96, 165, 250, 0.5);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area:hover {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: scale(1.02);
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+
+        .file-info {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .nav-links-bottom {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .nav-links-bottom a {
+            color: #60a5fa;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .nav-links-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        .file-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">📤</span>
+                <span class="logo-text">CDN Upload</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">📁 Browse</a>
+                <a href="/stats">📊 Stats</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>📤 Upload to CDN</h1>
+            <p class="subtitle">Upload your files to the content delivery network</p>
+            
+            {% if success %}
+            <div class="success-message">
+                <h3>✅ Upload Successful!</h3>
+                <p>File "{{ filename }}" has been uploaded.</p>
+                {% if is_update %}
+                <p>🔄 This was an update. Cache will be automatically purged.</p>
+                {% endif %}
+                <div class="file-details">
+                    <p>📦 Size: {{ file_size_str }}</p>
+                    <p>📅 Time: {{ result.timestamp if result else 'Now' }}</p>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <a href="/file/{{ filename }}" style="color: #60a5fa;">View File →</a>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if error %}
+            <div class="error-message">
+                ❌ Error: {{ error }}
+            </div>
+            {% endif %}
+            
+            <form method="POST" enctype="multipart/form-data" id="upload-form">
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <div>Click or drag file here to upload</div>
+                    <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                        Max file size: 10MB
+                    </div>
+                </div>
+                <input type="file" name="file" id="file-input" class="file-input" accept="*/*">
+                <button type="submit" class="btn" id="upload-btn" disabled>Select a file first</button>
+            </form>
+            
+            <div class="file-info" id="file-info" style="display: none;">
+                <strong>Selected file:</strong> <span id="file-name"></span><br>
+                <strong>Size:</strong> <span id="file-size"></span>
+            </div>
+            
+            <div class="nav-links-bottom">
+                <a href="/">← Back to Home</a>
+                <a href="/stats">📊 View Statistics</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInfo = document.getElementById('file-info');
+        const fileNameSpan = document.getElementById('file-name');
+        const fileSizeSpan = document.getElementById('file-size');
+        
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#60a5fa';
+            uploadArea.style.background = 'rgba(96, 165, 250, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'rgba(96, 165, 250, 0.5)';
+            uploadArea.style.background = 'transparent';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+        
+        function handleFile(file) {
+            if (file) {
+                fileNameSpan.textContent = file.name;
+                fileSizeSpan.textContent = (file.size / 1024).toFixed(2) + ' KB';
+                fileInfo.style.display = 'block';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '📤 Upload ' + file.name;
+            }
+        }
+    </script>
+</body>
+</html>

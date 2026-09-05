@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View {{ filename }} - CDN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .file-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .file-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            color: white;
+        }
+
+        .file-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .file-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .file-content {
+            padding: 2rem;
+        }
+
+        .image-container {
+            text-align: center;
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .text-content {
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .video-container {
+            text-align: center;
+            background: #1a202c;
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+
+        .video-container video {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 0.5rem;
+        }
+
+        .audio-container {
+            text-align: center;
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+
+        .audio-container audio {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .pdf-container {
+            text-align: center;
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+
+        .pdf-container embed, .pdf-container iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 0.5rem;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #38a169;
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: #718096;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            margin-right: 1rem;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4a5568;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-hit {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-miss {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            margin-top: 2rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">📁 CDN Viewer</div>
+            <div class="nav-links">
+                <a href="/">Browse</a>
+                <a href="/upload">Upload</a>
+                <a href="/stats">Stats</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="file-card">
+            <div class="file-header">
+                <h1>{{ filename }}</h1>
+                <div class="file-meta">
+                    <span>📦 {{ file_size_str }}</span>
+                    <span>📍 Served from: {{ edge_region.upper() }} Edge Node</span>
+                    <span>⚡ Response time: {{ response_time }}</span>
+                    <span>🎯 Your location: {{ location.upper() }}</span>
+                    <span>
+                        Cache: 
+                        <span class="badge {% if cache_status == 'HIT' %}badge-hit{% else %}badge-miss{% endif %}">
+                            {{ cache_status }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div class="file-content">
+                {% if content %}
+                    <!-- Text Content -->
+                    <div class="text-content">
+                        <pre>{{ content }}</pre>
+                    </div>
+                {% elif filename.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')) %}
+                    <!-- Image Content -->
+                    <div class="image-container">
+                        <img src="/download/{{ filename }}" alt="{{ filename }}">
+                    </div>
+                {% elif filename.endswith(('.mp4', '.webm', '.ogg', '.mov')) %}
+                    <!-- Video Content -->
+                    <div class="video-container">
+                        <video controls>
+                            <source src="/download/{{ filename }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                {% elif filename.endswith(('.mp3', '.wav', '.ogg', '.m4a')) %}
+                    <!-- Audio Content -->
+                    <div class="audio-container">
+                        <audio controls>
+                            <source src="/download/{{ filename }}" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                        </audio>
+                    </div>
+                {% elif filename.endswith('.pdf') %}
+                    <!-- PDF Content -->
+                    <div class="pdf-container">
+                        <embed src="/download/{{ filename }}" type="application/pdf" width="100%" height="600px">
+                        <p>If PDF doesn't load, <a href="/download/{{ filename }}">download it here</a></p>
+                    </div>
+                {% else %}
+                    <!-- Binary File - Show download link -->
+                    <div style="text-align: center; padding: 3rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">📄</div>
+                        <p>This is a binary file that cannot be displayed in the browser.</p>
+                        <p>File size: {{ file_size_str }}</p>
+                        <p>Content Type: {{ content_type if content_type else 'application/octet-stream' }}</p>
+                        <a href="/download/{{ filename }}" class="download-btn">⬇️ Download File</a>
+                    </div>
+                {% endif %}
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <a href="/" class="back-btn">← Back to Browse</a>
+                    <a href="/download/{{ filename }}" class="download-btn">⬇️ Download</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Content delivered from {{ edge_region.upper() }} Edge Node | Cache: {{ cache_status }}</p>
+        </div>
+    </div>
+</body>
+</html>

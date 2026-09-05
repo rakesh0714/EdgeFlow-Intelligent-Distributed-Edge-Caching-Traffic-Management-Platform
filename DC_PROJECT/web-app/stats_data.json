@@ -1,0 +1,54 @@
+{
+  "access_logs": [
+    {
+      "filename": "sample.pdf",
+      "region": "america",
+      "cache_status": "HIT",
+      "response_time_ms": 124,
+      "timestamp": "2026-03-25 21:24:03",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "ip": "127.0.0.1"
+    },
+    {
+      "filename": "welcome.txt",
+      "region": "america",
+      "cache_status": "HIT",
+      "response_time_ms": 119,
+      "timestamp": "2026-03-25 21:23:59",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "ip": "127.0.0.1"
+    },
+    {
+      "filename": "welcome.txt",
+      "region": "america",
+      "cache_status": "HIT",
+      "response_time_ms": 131,
+      "timestamp": "2026-03-25 21:23:42",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+      "ip": "127.0.0.1"
+    }
+  ],
+  "upload_history": [
+    {
+      "filename": "alanwalker.txt",
+      "size": 29,
+      "size_str": "29 B",
+      "status": "Failed",
+      "message": "HTTP 500",
+      "timestamp": "2026-03-25 21:25:56"
+    },
+    {
+      "filename": "welcome.txt",
+      "size": 18,
+      "size_str": "18 B",
+      "status": "Failed",
+      "message": "HTTP 500",
+      "timestamp": "2026-03-25 21:25:38"
+    }
+  ],
+  "total_requests": 3,
+  "total_hits": 3,
+  "total_misses": 0,
+  "upload_count": 2,
+  "last_updated": "2026-03-25T21:25:56.386994"
+}
